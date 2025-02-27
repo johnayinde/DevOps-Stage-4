@@ -1,40 +1,54 @@
 version: "3.8"
 
 services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+      - auth-api
+      - todos-api
+      - users-api
+    restart: always
+
   # Frontend service
   frontend:
     build: ./frontend
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     depends_on:
       - auth-api
       - todos-api
       - users-api
-    # env_file: ./env
+    env_file: ./frontend/.env
 
   # Auth API service (Go)
   auth-api:
     build: ./auth-api
-    ports:
-      - "8081:8081"
+    # ports:
+    #   - "8081:8081"
     depends_on:
       - users-api
-    # env_file: .env
+    env_file: ./auth-api/.env
 
   # Todos API service (Node.js)
   todos-api:
     build: ./todos-api
-    ports:
-      - "8082:8082"
+    # ports:
+    #   - "8082:8082"
     depends_on:
       - redis-queue
-    # env_file: .env
+    env_file: ./todos-api/.env
 
   # Users API service (Java/Spring Boot)
   users-api:
     build: ./users-api
-    ports:
-      - "8083:8083"
+    # ports:
+    #   - "8083:8083"
     env_file: ./users-api/.env
 
   # Log Message Processor service (Python)
