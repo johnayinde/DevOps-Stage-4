@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # Frontend service
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-api
+      - todos-api
+      - users-api
+    # env_file: ./env
+
+  # Auth API service (Go)
+  auth-api:
+    build: ./auth-api
+    ports:
+      - "8081:8081"
+    depends_on:
+      - users-api
+    # env_file: .env
+
+  # Todos API service (Node.js)
+  todos-api:
+    build: ./todos-api
+    ports:
+      - "8082:8082"
+    depends_on:
+      - redis-queue
+    # env_file: .env
+
+  # Users API service (Java/Spring Boot)
+  users-api:
+    build: ./users-api
+    ports:
+      - "8083:8083"
+    env_file: ./users-api/.env
+
+  # Log Message Processor service (Python)
+  log-processor:
+    build: ./log-message-processor
+    depends_on:
+      - redis-queue
+    env_file: ./log-message-processor/.env
+
+  # Redis for caching and message queue
+  redis-queue:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
