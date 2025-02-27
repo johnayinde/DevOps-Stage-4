@@ -20,8 +20,6 @@ services:
   # Frontend service
   frontend:
     build: ./frontend
-    # ports:
-    #   - "8080:8080"
     depends_on:
       - auth-api
       - todos-api
@@ -36,8 +34,6 @@ services:
   # Auth API service (Go)
   auth-api:
     build: ./auth-api
-    # ports:
-    #   - "8081:8081"
     depends_on:
       - users-api
     env_file: ./auth-api/.env
@@ -50,8 +46,6 @@ services:
   # Todos API service (Node.js)
   todos-api:
     build: ./todos-api
-    # ports:
-    #   - "8082:8082"
     depends_on:
       - redis-queue
     env_file: ./todos-api/.env

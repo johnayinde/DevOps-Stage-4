@@ -2,7 +2,6 @@ FROM python:3.9
 
 WORKDIR /app
 
-# Create a compatibility layer for thriftpy
 RUN mkdir -p /tmp/thriftpy_compat && \
     echo 'import thriftpy2 as thriftpy' > /tmp/thriftpy_compat/thriftpy.py && \
     echo 'from thriftpy2 import *' >> /tmp/thriftpy_compat/thriftpy.py
@@ -10,7 +9,6 @@ RUN mkdir -p /tmp/thriftpy_compat && \
 # Install requirements with thriftpy2
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools wheel && \
-    # Install from requirements.txt
     pip install -r requirements.txt
 
 # Ensure the compatibility layer is in Python's import path
