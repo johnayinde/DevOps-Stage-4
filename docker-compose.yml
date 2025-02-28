@@ -54,6 +54,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/auth`)"
       - "traefik.http.routers.auth.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls=true"
       - "traefik.http.services.auth.loadbalancer.server.port=8081"
 
   # Todos API service (Node.js)
@@ -68,6 +69,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.todos.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/todos`)"
       - "traefik.http.routers.todos.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls=true"
       - "traefik.http.services.todos.loadbalancer.server.port=8082"
 
   # Users API service (Java/Spring Boot)
@@ -80,6 +82,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.users.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/users`)"
       - "traefik.http.routers.users.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls=true"
       - "traefik.http.services.users.loadbalancer.server.port=8083"
 
   # Log Message Processor service (Python)
