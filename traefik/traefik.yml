@@ -37,6 +37,7 @@ certificatesResolvers:
       storage: /acme.json
       tlsChallenge: {}
 
+# Logging Configuration
 log:
   level: INFO
 
