@@ -2,6 +2,7 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 
+# Entry Points (Handles HTTP & HTTPS Traffic)
 entryPoints:
   web:
     address: ":80"
@@ -10,25 +11,37 @@ entryPoints:
         entryPoint:
           to: "websecure"
           scheme: "https"
+          permanent: true # Ensures 301 redirect from HTTP to HTTPS
 
   websecure:
     address: ":443"
     http:
       tls:
         certResolver: myresolver
+        domains:
+          - main: "ayinde.name.ng" # Primary domain
+            sans:
+              - "*.ayinde.name.ng" # Wildcard for subdomains
 
+# Traefik Providers Configuration
 providers:
   docker:
-    exposedByDefault: false
+    exposedByDefault: false # Only expose containers with the 'traefik.enable=true' label
+  file:
+    directory: "/etc/traefik/"
+    watch: true # Automatically reload on changes
 
+# Let's Encrypt SSL Certificate Configuration
 certificatesResolvers:
   myresolver:
     acme:
-      email: lolaayinde@gmail.com
-      storage: /acme.json
-      tlsChallenge: {}
+      email: "lolaayinde@gmail.com"
+      storage: "/acme.json"
+      tlsChallenge: {} # TLS challenge for production
+      # Optional: Enable staging to prevent rate limits during testing
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
 
-# Add this to traefik.yml
+# Traefik Dashboard (Enable for monitoring)
 api:
   dashboard: true
-  insecure: true
+  insecure: true # Not recommended for production, use only in testing

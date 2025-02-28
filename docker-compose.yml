@@ -15,7 +15,10 @@ services:
     environment:
       - DOMAIN=ayinde.name.ng
     labels:
+      - "traefik.enable=true"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
 
   # Frontend service
   frontend:
@@ -29,6 +32,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`ayinde.name.ng`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=8080"
 
   # Auth API service (Go)
@@ -41,6 +45,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/auth`)"
       - "traefik.http.routers.auth.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls.certresolver=letsencrypt"
       - "traefik.http.services.auth.loadbalancer.server.port=8081"
 
   # Todos API service (Node.js)
@@ -53,6 +58,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.todos.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/todos`)"
       - "traefik.http.routers.todos.entrypoints=websecure"
+      - "traefik.http.routers.todos.tls.certresolver=letsencrypt"
       - "traefik.http.services.todos.loadbalancer.server.port=8082"
 
   # Users API service (Java/Spring Boot)
@@ -63,6 +69,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.users.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/users`)"
       - "traefik.http.routers.users.entrypoints=websecure"
+      - "traefik.http.routers.users.tls.certresolver=letsencrypt"
       - "traefik.http.services.users.loadbalancer.server.port=8083"
 
   # Log Message Processor service (Python)
