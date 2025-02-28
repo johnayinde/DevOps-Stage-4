@@ -2,7 +2,7 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 
-# Configure entrypoints
+# Configure entrypoints (Only Define Once)
 entryPoints:
   web:
     address: ":80"
@@ -24,18 +24,19 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: traefik_network
+    network: traefik_default
   file:
     directory: "/etc/traefik/dynamic"
     watch: true
 
-# Configure certificate resolvers
+# Configure certificate resolvers (Only Define Once)
 certificatesResolvers:
   myresolver:
     acme:
       email: lolaayinde@gmail.com
       storage: /acme.json
-      tlsChallenge: {}
+      httpChallenge:
+        entryPoint: web
 
 # Logging Configuration
 log:
