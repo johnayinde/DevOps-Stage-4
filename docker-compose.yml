@@ -13,6 +13,8 @@ services:
       - ./traefik/acme.json:/acme.json
     environment:
       - DOMAIN=ayinde.name.ng
+    networks:
+      - traefik_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`ayinde.name.ng`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
@@ -31,6 +33,8 @@ services:
       - todos-api
       - users-api
     env_file: ./frontend/.env
+    networks:
+      - traefik_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`ayinde.name.ng`)"
@@ -44,6 +48,8 @@ services:
     depends_on:
       - users-api
     env_file: ./auth-api/.env
+    networks:
+      - traefik_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/auth`)"
@@ -57,6 +63,8 @@ services:
     depends_on:
       - redis-queue
     env_file: ./todos-api/.env
+    networks:
+      - traefik_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.todos.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/todos`)"
@@ -68,6 +76,8 @@ services:
   users-api:
     build: ./users-api
     env_file: ./users-api/.env
+    networks:
+      - traefik_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.users.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/users`)"
@@ -93,3 +103,7 @@ services:
 
 volumes:
   redis-data:
+
+networks:
+  traefik_network:
+    driver: bridge
