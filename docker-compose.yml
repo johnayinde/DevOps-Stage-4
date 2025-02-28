@@ -8,14 +8,38 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=admin@ayinde.name.ng"
+      - "--certificatesresolvers.letsencryptresolver.acme.storage=/etc/traefik/acme.json"
+      - "--providers.docker.defaultRule=Host(`ayinde.name.ng`)"
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml
       - ./traefik/acme.json:/acme.json
+      - traefik-certificates:/etc/traefik
+
     environment:
       - DOMAIN=ayinde.name.ng
     labels:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
+      - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.cors.headers.addvaryheader=true"
 
   # Frontend service
   frontend:
@@ -31,6 +55,8 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.services.frontend.loadbalancer.server.port=8080"
 
+      - "traefik.http.routers.frontend.tls.certresolver=letsencryptresolver"
+
   # Auth API service (Go)
   auth-api:
     build: ./auth-api
@@ -42,6 +68,16 @@ services:
       - "traefik.http.routers.auth.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/auth`)"
       - "traefik.http.routers.auth.entrypoints=websecure"
       - "traefik.http.services.auth.loadbalancer.server.port=8081"
+
+      - "traefik.http.middlewares.auth-stripprefix.stripprefix.prefixes=/api/auth"
+      - "traefik.http.middlewares.auth-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.http.routers.auth.middlewares=auth-stripprefix,cors"
+      - "traefik.http.routers.auth.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.auth-direct.rule=Host(`ayinde.name.ng`) && (Path(`/login`) || Path(`/register`))"
+      - "traefik.http.routers.auth-direct.service=auth"
+      - "traefik.http.routers.auth-direct.entrypoints=websecure"
+      - "traefik.http.routers.auth-direct.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.auth-direct.middlewares=cors"
 
   # Todos API service (Node.js)
   todos-api:
@@ -55,6 +91,15 @@ services:
       - "traefik.http.routers.todos.entrypoints=websecure"
       - "traefik.http.services.todos.loadbalancer.server.port=8082"
 
+      - "traefik.http.middlewares.todos-stripprefix.stripprefix.prefixes=/api/todos"
+      - "traefik.http.routers.todos.middlewares=todos-stripprefix"
+      - "traefik.http.routers.todos.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.todos-direct.rule=Host(`ayinde.name.ng`) && Path(`/todos`)"
+      - "traefik.http.routers.todos-direct.service=todos"
+      - "traefik.http.routers.todos-direct.entrypoints=websecure"
+      - "traefik.http.routers.todos-direct.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.todos-direct.middlewares=cors"
+
   # Users API service (Java/Spring Boot)
   users-api:
     build: ./users-api
@@ -64,6 +109,10 @@ services:
       - "traefik.http.routers.users.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/users`)"
       - "traefik.http.routers.users.entrypoints=websecure"
       - "traefik.http.services.users.loadbalancer.server.port=8083"
+
+      - "traefik.http.middlewares.users-stripprefix.stripprefix.prefixes=/api/users"
+      - "traefik.http.routers.users.middlewares=users-stripprefix"
+      - "traefik.http.routers.users.tls.certresolver=letsencryptresolver"
 
   # Log Message Processor service (Python)
   log-processor:
@@ -82,4 +131,5 @@ services:
     command: redis-server --appendonly yes
 
 volumes:
+  traefik-certificates:
   redis-data:
