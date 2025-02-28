@@ -11,6 +11,7 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+          permanent: true
   websecure:
     address: ":443"
 
@@ -24,9 +25,8 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: traefik_default
+    network: traefik_network
   file:
-    directory: "/etc/traefik/dynamic"
     watch: true
 
 # Configure certificate resolvers (Only Define Once)
