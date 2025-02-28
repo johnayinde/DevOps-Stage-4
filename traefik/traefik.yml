@@ -30,13 +30,13 @@ providers:
     watch: true
 
 # Configure certificate resolvers (Only Define Once)
-certificatesResolvers:
-  myresolver:
-    acme:
-      email: lolaayinde@gmail.com
-      storage: /acme.json
-      httpChallenge:
-        entryPoint: web
+# certificatesResolvers:
+#   myresolver:
+#     acme:
+#       email: lolaayinde@gmail.com
+#       storage: /acme.json
+#       httpChallenge:
+#         entryPoint: web
 
 # Logging Configuration
 log:
