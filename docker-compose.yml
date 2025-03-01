@@ -17,9 +17,9 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`ayinde.name.ng`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`ayinde.name.ng`, `www.ayinde.name.ng`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dashboard.tls=true" # Enable TLS
+      - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$talRrAD9$$PS6mhh8xQh2ZnrEWn1dPu1"
@@ -37,15 +37,10 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`ayinde.name.ng`)"
+      - "traefik.http.routers.frontend.rule=Host(`ayinde.name.ng`, `www.ayinde.name.ng`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls=true" # Enable TLS
+      - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=8080"
-      # HTTP router
-      - "traefik.http.routers.frontend-http.rule=Host(`ayinde.name.ng`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      # HTTPS router
-      # Service definition (shared between both routers)
 
   # Auth API service (Go)
   auth-api:
@@ -57,7 +52,7 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.auth-api.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/auth`)"
+      - "traefik.http.routers.auth-api.rule=Host(`ayinde.name.ng`, `www.ayinde.name.ng`) && PathPrefix(`/api/auth`)"
       - "traefik.http.routers.auth-api.entrypoints=websecure"
       - "traefik.http.routers.auth-api.tls=true"
       - "traefik.http.services.auth-api.loadbalancer.server.port=8081"
@@ -72,7 +67,7 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.todos-api.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/todos`)"
+      - "traefik.http.routers.todos-api.rule=Host(`ayinde.name.ng`, `www.ayinde.name.ng`) && PathPrefix(`/api/todos`)"
       - "traefik.http.routers.todos-api.entrypoints=websecure"
       - "traefik.http.routers.todos-api.tls=true"
       - "traefik.http.services.todos-api.loadbalancer.server.port=8082"
@@ -85,7 +80,7 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.users-api.rule=Host(`ayinde.name.ng`) && PathPrefix(`/api/users`)"
+      - "traefik.http.routers.users-api.rule=Host(`ayinde.name.ng`, `www.ayinde.name.ng`) && PathPrefix(`/api/users`)"
       - "traefik.http.routers.users-api.entrypoints=websecure"
       - "traefik.http.routers.users-api.tls=true"
       - "traefik.http.services.users-api.loadbalancer.server.port=8083"
